@@ -1,7 +1,8 @@
 import * as debug from 'debug';
 import * as http from 'http';
-import App from './App';
+import Service from './App';
 
-const server = new App().listen;
+const service = new Service();
+service.listen()
 
-export default server;
+export default service;

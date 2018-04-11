@@ -3,6 +3,6 @@ import * as http from 'http';
 import Service from './App';
 
 const service = new Service();
-service.listen()
+service.listen();
 
 export default service;

@@ -1,8 +1,8 @@
-import { Application } from "express";
-import { updateController } from "./controllers/contentControllers";
-import { pingController } from "./controllers/utilControllers";
+import { Application } from 'express';
+import { updateController } from './controllers/contentControllers';
+import { pingController } from './controllers/utilControllers';
 
 export default (app: Application) => {
-  app.get("/ping", pingController)
-  app.post("/update/:id", updateController)
-}
+  app.get('/ping', pingController);
+  app.post('/update/:id', updateController);
+};

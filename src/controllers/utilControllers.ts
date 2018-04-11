@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 export function pingController(req: Request, res: Response) {
-  res.send("pong");
+  res.send('pong');
 }

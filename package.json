@@ -23,26 +23,31 @@
     "format": "prettier --write \"{src,tests}/**/*.ts\" --single-quote --trailing-comma es5",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
     "prepublishOnly": "npm run build",
-    "prebuild": "npm run clean && npm run format && npm run lint && echo Using TypeScript && tsc --version",
-    "build": "tsc --pretty",
+    "prebuild": "npm run clean && npm run format && npm run lint",
+    "build": "tsc",
     "test": "jest",
     "coverage": "jest --coverage",
-    "watch": "npm run build -- --watch",
-    "watch:test": "jest --watch"
+    "watch": "concurrently --raw -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold\" \"npm run watch:ts\" \"npm run watch:node\"",
+    "watch:debug": "DEBUG=kerckhoff-live* npm run watch",
+    "watch:ts": "npm run build -- --watch",
+    "watch:test": "jest --watch",
+    "watch:node": "nodemon lib/index.js"
   },
   "lint-staged": {
     "*.ts": [
-      "npm run lint",
+      "npm run prebuild",
       "git add"
     ]
   },
   "dependencies": {
     "@types/lodash": "^4.14.106",
+    "concurrently": "^3.5.1",
     "debug": "^3.1.0",
     "dtslint": "^0.2.0",
     "express": "^4.16.3",
     "lodash": "^4.17.5",
     "lru-cache": "^4.1.2",
+    "nodemon": "^1.17.3",
     "shortid": "^2.2.8",
     "socket.io": "^2.1.0"
   },

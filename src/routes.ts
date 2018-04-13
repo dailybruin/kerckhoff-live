@@ -4,5 +4,5 @@ import { pingController } from './controllers/utilControllers';
 
 export default (app: Application) => {
   app.get('/ping', pingController);
-  app.post('/update/:id', updateController);
+  app.post('/update', updateController);
 };

@@ -19,11 +19,7 @@ class Service {
 
     See https://socket.io/docs/using-multiple-nodes/
   */
-  private static localData: LRU.Cache<string, KerckhoffContent> = new LRU({
-    max: 1000,
-    maxAge: 60000, // 1 minute
-  });
-
+  private localData: LRU.Cache<string, KerckhoffContent>;
   private connected: LRU.Cache<string, Subscriber>;
   private app: express.Application;
   private server: Server;
@@ -39,6 +35,10 @@ class Service {
       dispose: Subscriber.cleanUp,
       max: 100000,
       maxAge: 30000, // 3 minutes
+    });
+    this.localData = new LRU({
+      max: 1000,
+      maxAge: 60000, // 1 minute
     });
     bindRoutes(this.app);
   }
@@ -56,7 +56,7 @@ class Service {
 
   // Just to make our lives easier in unit testing
   public getLocalData(): LRU.Cache<string, KerckhoffContent> {
-    return Service.localData;
+    return this.localData;
   }
 
   public getSocket(): socketIo.Server {

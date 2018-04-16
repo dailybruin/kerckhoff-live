@@ -1,3 +1,3 @@
-export interface PostRequest {
-    id: string
+export interface IPostRequest {
+  id: string;
 }

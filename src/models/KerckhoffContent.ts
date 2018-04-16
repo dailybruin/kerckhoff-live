@@ -28,9 +28,10 @@ export default class KerckhoffContent {
     // TODO: emit to the room
   }
 
-  //public getData: Im a new subscriber, I connect to node server, I need new initial data
-  //I call getData. getData will return data if it is current, otherwise it will 
-  //update its data from django
+  // public getData: Im a new subscriber, I connect to node server, I need new initial data
+  // I call getData. getData will return data if it is current, otherwise it will
+  // update its data from django using pushData with update set to true
+  // public async getData(): Promise<any> {}
 
   // method called also when new post comes in from Kerckhoff
   // TODO: updates the state of its content, and emit it to the room

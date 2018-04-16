@@ -54,13 +54,26 @@ class Service {
     return this.server;
   }
 
-  // Just to make our lives easier in unit testing
-  public getLocalData(): LRU.Cache<string, KerckhoffContent> {
-    return this.localData;
-  }
-
   public getSocket(): socketIo.Server {
     return this.sio;
+  }
+
+  // Get KerckchoffContent object from LRUCache using id slug
+  public getContentById(id: string): KerckhoffContent | undefined {
+    const data = this.getLocalData();
+    return data.get(id);
+  }
+
+  // Creates new LRUCache object using id
+  public setContentId(id: string): void {
+    const data = this.getLocalData();
+    const newKerckhoffContent = new KerckhoffContent(id, this);
+    data.set(id, newKerckhoffContent);
+  }
+
+  // Just to make our lives easier in unit testing
+  private getLocalData(): LRU.Cache<string, KerckhoffContent> {
+    return this.localData;
   }
 }
 

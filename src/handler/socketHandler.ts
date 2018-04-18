@@ -9,6 +9,7 @@ enum Events {
   OK = 'ack',
   ERR = 'err',
   REFRESH = 'ref',
+  UPDATE = 'upd',
 }
 
 enum SubscriberState {
@@ -60,6 +61,18 @@ export default class Subscriber {
   // TODO: tries to either get an existing KerckhoffContent from the cache or create one (make a method!)
   // and calls its pushData method
   public associateContent(slug?: string): void {
+    this.socket.emit(Events.UPDATE, {
+      content: {
+        category: 'music',
+        image: 'https://placeimg.com/1024/768/nature',
+        text: `Sed at blandit diam. Cras accumsan in ligula sit amet malesuada. Praesent nec odio dapibus, auctor erat ac,
+        facilisis risus. In hac habitasse platea dictumst. Etiam sit amet tristique elit,
+        sit amet maximus sem. Praesent pharetra safddsf nibh eu tincidunt. Sed dapibus tempus luctus.
+        Proin sit amet diam cursus, eleifend sapien eu, viverra sem`,
+        time: '9:00',
+        title: 'hello world',
+      },
+    });
     return;
   }
 
@@ -80,6 +93,7 @@ export default class Subscriber {
         if (this.isInitRequest(arg)) {
           this.associateContent(arg.id);
         }
+        this.socket.emit(Events.OK, {});
         break;
       }
       case SubscriberState.LISTENING: {

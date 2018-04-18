@@ -8,6 +8,8 @@ import { APP_NAME, HOST, PORT } from './config';
 import Subscriber from './handler/socketHandler';
 import KerckhoffContent from './models/KerckhoffContent';
 import bindRoutes from './routes';
+import * as bodyparser from 'body-parser';
+
 class Service {
   /*
     Just gonna use a public static variable. Sue me.
@@ -40,6 +42,7 @@ class Service {
       max: 1000,
       maxAge: 60000, // 1 minute
     });
+    this.setupMiddleware();
     bindRoutes(this.app);
   }
 
@@ -69,6 +72,10 @@ class Service {
     const data = this.getLocalData();
     const newKerckhoffContent = new KerckhoffContent(id, this);
     data.set(id, newKerckhoffContent);
+  }
+
+  private setupMiddleware() {
+    this.app.use(bodyparser.json());
   }
 
   // Just to make our lives easier in unit testing

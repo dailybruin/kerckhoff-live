@@ -9,7 +9,7 @@ export default class KerckhoffContent {
   private lastUpdateTime?: number;
   private ver?: string;
 
-  constructor(slug: string, service?: Service) {
+  constructor(slug: string) {
     this.slug = slug;
     // TODO: have this
     this.update();
@@ -19,11 +19,7 @@ export default class KerckhoffContent {
   // 1) new data comes in from Kerckhoff
   // 2) someone wants a refresh
   public async pushData(update: boolean = false): Promise<void> {
-    if (
-      update ||
-      this.lastUpdateTime === undefined ||
-      Date.now() - this.lastUpdateTime > MAX_TIME_BEFORE_RECHECK
-    ) {
+    if (update || this.needUpdate()) {
       await this.update();
     }
     // we have some content, now push that to the end user
@@ -34,10 +30,8 @@ export default class KerckhoffContent {
   // 1) getData will return data if it is current, otherwise it will
   // 2) update its data from django using pushData(true)
   public async getData(): Promise<any> {
-    const currentTime = Date.now();
-    const mostRecentUpdate = this.lastUpdateTime;
     // If data is NOT current
-    if (mostRecentUpdate !== undefined && currentTime > mostRecentUpdate) {
+    if (this.needUpdate()) {
       await this.pushData(true);
     }
     return this.content;
@@ -55,5 +49,12 @@ export default class KerckhoffContent {
     const response = await this.fetchFromKerckhoff(this.slug);
     this.content = response;
     this.lastUpdateTime = Date.now();
+  }
+
+  private needUpdate(): boolean {
+    return (
+      this.lastUpdateTime === undefined ||
+      Date.now() - this.lastUpdateTime > MAX_TIME_BEFORE_RECHECK
+    );
   }
 }

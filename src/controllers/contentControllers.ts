@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import service from '../index';
 import KerckhoffContent from '../models/KerckhoffContent';
 import { IPostRequest } from '../models/PostRequest';
+import axios from 'axios';
 
 /*
 TODO: this function handles an incoming content updated

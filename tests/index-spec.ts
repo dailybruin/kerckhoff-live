@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { updateController } from '../src/controllers/contentControllers';
 import * as index from '../src/index';
+import { updateController } from '../src/controllers/contentControllers';
+import { Request, Response } from 'express';
 import service from '../src/index';
 import KerckhoffContent from '../src/models/KerckhoffContent';
 
@@ -35,10 +35,9 @@ class TestKerckhoffContent extends KerckhoffContent {
   }
 }
 
-/*
 test('KerckhoffContent getData() does what we want', () => {
   const slug: string = 'slug';
   const newTest = new TestKerckhoffContent(slug, service);
   const checkString = newTest.getData();
   expect(checkString).toBe('jesus');
-}); */
+}); 

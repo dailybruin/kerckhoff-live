@@ -1,6 +1,8 @@
+import axios from 'axios';
 import Service from '../app';
 import { KERCKHOFF_URL, MAX_TIME_BEFORE_RECHECK } from '../config';
 import serviceInstance from '../index';
+
 export default class KerckhoffContent {
   private slug: string;
   private content: any;
@@ -31,7 +33,21 @@ export default class KerckhoffContent {
   // Called by new subscriber who connects to node server and wants initial data
   // 1) getData will return data if it is current, otherwise it will
   // 2) update its data from django using pushData(true)
-  // public async getData(): Promise<any> {}
+  public async getData(): Promise<any> {
+    const currentTime = Date.now();
+    const mostRecentUpdate = this.lastUpdateTime;
+    // If data is NOT current
+    if (mostRecentUpdate !== undefined && currentTime > mostRecentUpdate) {
+      await this.pushData(true);
+    }
+    return this.content;
+  }
+
+  protected async fetchFromKerckhoff(slug: string): Promise<any> {
+    const fullURL = KERCKHOFF_URL + '/api/packages/' + slug;
+    const res = await axios.get(fullURL);
+    return res.data;
+  }
 
   // method called also when new post comes in from Kerckhoff
   // TODO: updates the state of its content, and emit it to the room
@@ -39,12 +55,5 @@ export default class KerckhoffContent {
     const response = await this.fetchFromKerckhoff(this.slug);
     this.content = response;
     this.lastUpdateTime = Date.now();
-  }
-
-  private async fetchFromKerckhoff(slug: string): Promise<any> {
-    // TODO: actually fetch from kerckhoff
-    return {
-      test: 'test',
-    };
   }
 }

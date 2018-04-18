@@ -1,13 +1,15 @@
+import axios from 'axios';
 import Service from '../app';
 import { KERCKHOFF_URL, MAX_TIME_BEFORE_RECHECK } from '../config';
 import serviceInstance from '../index';
+
 export default class KerckhoffContent {
   private slug: string;
   private content: any;
   private lastUpdateTime?: number;
   private ver?: string;
 
-  constructor(slug: string, service?: Service) {
+  constructor(slug: string) {
     this.slug = slug;
     // TODO: have this
     this.update();
@@ -17,21 +19,29 @@ export default class KerckhoffContent {
   // 1) new data comes in from Kerckhoff
   // 2) someone wants a refresh
   public async pushData(update: boolean = false): Promise<void> {
-    if (
-      update ||
-      this.lastUpdateTime === undefined ||
-      Date.now() - this.lastUpdateTime > MAX_TIME_BEFORE_RECHECK
-    ) {
+    if (update || this.needUpdate()) {
       await this.update();
     }
     // we have some content, now push that to the end user
     // TODO: emit to the room
   }
 
-  // public getData: Im a new subscriber, I connect to node server, I need new initial data
-  // I call getData. getData will return data if it is current, otherwise it will
-  // update its data from django using pushData with update set to true
-  // public async getData(): Promise<any> {}
+  // Called by new subscriber who connects to node server and wants initial data
+  // 1) getData will return data if it is current, otherwise it will
+  // 2) update its data from django using pushData(true)
+  public async getData(): Promise<any> {
+    // If data is NOT current
+    if (this.needUpdate()) {
+      await this.pushData(true);
+    }
+    return this.content;
+  }
+
+  protected async fetchFromKerckhoff(slug: string): Promise<any> {
+    const fullURL = KERCKHOFF_URL + '/api/packages/' + slug;
+    const res = await axios.get(fullURL);
+    return res.data;
+  }
 
   // method called also when new post comes in from Kerckhoff
   // TODO: updates the state of its content, and emit it to the room
@@ -41,10 +51,10 @@ export default class KerckhoffContent {
     this.lastUpdateTime = Date.now();
   }
 
-  private async fetchFromKerckhoff(slug: string): Promise<any> {
-    // TODO: actually fetch from kerckhoff
-    return {
-      test: 'test',
-    };
+  private needUpdate(): boolean {
+    return (
+      this.lastUpdateTime === undefined ||
+      Date.now() - this.lastUpdateTime > MAX_TIME_BEFORE_RECHECK
+    );
   }
 }

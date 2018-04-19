@@ -46,8 +46,16 @@ export default class KerckhoffContent {
 
   protected async fetchFromKerckhoff(slug: string): Promise<any> {
     const fullURL = KERCKHOFF_URL + '/api/packages/' + slug;
-    const res = await axios.get(fullURL);
-    return res.data;
+    try {
+      const res = await axios.get(fullURL);
+      return res.data;
+    } catch (error) {
+      // TODO: Kerckhoff currently does not handle errors very well and throw 500s all the time
+      // screw that
+      return {
+        err: 404,
+      };
+    }
   }
 
   // method called also when new post comes in from Kerckhoff

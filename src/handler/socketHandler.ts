@@ -64,7 +64,7 @@ export default class Subscriber {
 
   private setListeners() {
     this.socket.on(Events.INIT, this.handleINIT.bind(this));
-    this.socket.on(Events.REFRESH, this.handleINIT.bind(this));
+    this.socket.on(Events.REFRESH, this.handleREFRESH.bind(this));
     this.socket.on('disconnect', msg => {
       this.debug(`disconnected: ${msg}`);
       this.state = SubscriberState.INVALID;
@@ -151,6 +151,7 @@ export default class Subscriber {
   }
 
   private handleREFRESH(arg: any) {
+    this.debug(`received refesh call`);
     switch (this.state) {
       case SubscriberState.UNINITIALIZED:
       case SubscriberState.INVALID: {

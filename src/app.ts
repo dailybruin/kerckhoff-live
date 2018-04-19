@@ -1,3 +1,4 @@
+import * as bodyparser from 'body-parser';
 import * as debug from 'debug';
 import * as express from 'express';
 import { createServer, Server } from 'http';
@@ -8,7 +9,6 @@ import { APP_NAME, HOST, PORT } from './config';
 import Subscriber from './handler/socketHandler';
 import KerckhoffContent from './models/KerckhoffContent';
 import bindRoutes from './routes';
-import * as bodyparser from 'body-parser';
 
 class Service {
   /*
@@ -21,17 +21,19 @@ class Service {
 
     See https://socket.io/docs/using-multiple-nodes/
   */
+  public debug: debug.IDebugger;
+
   private localData: LRU.Cache<string, KerckhoffContent>;
   private connected: LRU.Cache<string, Subscriber>;
   private app: express.Application;
   private server: Server;
   private sio: socketIo.Server;
-  private debug: debug.IDebugger;
 
   constructor() {
     this.app = express();
     this.server = createServer(this.app);
     this.sio = socketIo(this.server);
+    this.sio.origins('*:*');
     this.debug = debug(APP_NAME + '-http');
     this.connected = new LRU({
       dispose: Subscriber.cleanUp,
@@ -57,8 +59,17 @@ class Service {
     return this.server;
   }
 
-  public getSocket(): socketIo.Server {
+  public getSocketServer(): socketIo.Server {
     return this.sio;
+  }
+
+  public getOrSetContent(id: string): KerckhoffContent {
+    const kc = this.getContentById(id);
+    if (kc) {
+      return kc;
+    } else {
+      return this.setContentById(id);
+    }
   }
 
   // Get KerckchoffContent object from LRUCache using id slug
@@ -68,10 +79,15 @@ class Service {
   }
 
   // Creates new LRUCache object using id
-  public setContentId(id: string): void {
+  public setContentById(id: string): KerckhoffContent {
     const data = this.getLocalData();
-    const newKerckhoffContent = new KerckhoffContent(id, this);
+    const newKerckhoffContent = new KerckhoffContent(id);
     data.set(id, newKerckhoffContent);
+    return newKerckhoffContent;
+  }
+
+  public refreshSubscriber(id: string, sub: Subscriber): void {
+    this.connected.set(id, sub);
   }
 
   private setupMiddleware() {

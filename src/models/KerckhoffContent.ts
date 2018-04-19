@@ -1,16 +1,21 @@
 import axios from 'axios';
-import Service from '../app';
-import { KERCKHOFF_URL, MAX_TIME_BEFORE_RECHECK } from '../config';
+import * as debug from 'debug';
+import Service from '../App';
+import { APP_NAME, KERCKHOFF_URL, MAX_TIME_BEFORE_RECHECK } from '../config';
 import serviceInstance from '../index';
-
+import { Events } from './States';
 export default class KerckhoffContent {
   private slug: string;
   private content: any;
   private lastUpdateTime?: number;
   private ver?: string;
+  private room: SocketIO.Namespace;
+  private debug: debug.IDebugger;
 
   constructor(slug: string) {
     this.slug = slug;
+    this.room = serviceInstance.getSocketServer().to(slug);
+    this.debug = debug(APP_NAME + '-' + this.slug);
     // TODO: have this
     this.update();
   }
@@ -22,8 +27,10 @@ export default class KerckhoffContent {
     if (update || this.needUpdate()) {
       await this.update();
     }
+    this.debug('pushing new update to subscribers');
     // we have some content, now push that to the end user
-    // TODO: emit to the room
+    this.room.emit(Events.UPDATE, this.content);
+    return;
   }
 
   // Called by new subscriber who connects to node server and wants initial data
@@ -46,6 +53,7 @@ export default class KerckhoffContent {
   // method called also when new post comes in from Kerckhoff
   // TODO: updates the state of its content, and emit it to the room
   private async update(): Promise<void> {
+    this.debug('fetching latest data from Kerckhoff');
     const response = await this.fetchFromKerckhoff(this.slug);
     this.content = response;
     this.lastUpdateTime = Date.now();

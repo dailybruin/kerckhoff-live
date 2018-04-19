@@ -1,8 +1,8 @@
+import axios from 'axios';
 import { Request, Response } from 'express';
 import service from '../index';
 import KerckhoffContent from '../models/KerckhoffContent';
 import { IPostRequest } from '../models/PostRequest';
-import axios from 'axios';
 
 /*
 TODO: this function handles an incoming content updated
@@ -16,13 +16,11 @@ export function updateController(req: Request, res: Response) {
 
   // }
   const reqBody = req.body as IPostRequest;
-  const kerckhoffContent = service.getContentById(reqBody.id);
+  const kerckhoffContent = service.getOrSetContent(reqBody.id);
 
-  if (kerckhoffContent !== undefined) {
-    kerckhoffContent.pushData(true);
-  } else {
-    service.setContentId(reqBody.id);
-  }
+  service.debug(`received update POST`);
+
+  kerckhoffContent.pushData(true);
   res.sendStatus(200);
   return;
 }

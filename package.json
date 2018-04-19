@@ -25,13 +25,15 @@
     "prepublishOnly": "npm run build",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "tsc",
+    "prod": "tsc",
     "test": "jest",
     "coverage": "jest --coverage",
     "watch": "concurrently --raw -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold\" \"npm run watch:ts\" \"npm run watch:node\"",
     "watch:debug": "DEBUG=kerckhoff-live* npm run watch",
     "watch:ts": "npm run build -- --watch",
     "watch:test": "jest --watch",
-    "watch:node": "nodemon lib/index.js"
+    "watch:node": "nodemon lib/index.js",
+    "start": "node lib/index.js"
   },
   "lint-staged": {
     "*.ts": [
@@ -50,7 +52,8 @@
     "lru-cache": "^4.1.2",
     "nodemon": "^1.17.3",
     "shortid": "^2.2.8",
-    "socket.io": "^2.1.0"
+    "socket.io": "^2.1.0",
+    "body-parser": "^1.18.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.8",
@@ -61,7 +64,6 @@
     "@types/node": "^8.10.3",
     "@types/shortid": "0.0.29",
     "@types/socket.io": "^1.4.33",
-    "body-parser": "^1.18.2",
     "coveralls": "^2.0.0",
     "husky": "^0.14.3",
     "jest": "^22.0.4",
